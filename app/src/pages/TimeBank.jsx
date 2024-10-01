@@ -1,101 +1,78 @@
-import { useState } from 'react'
-import 'react-calendar/dist/Calendar.css';
+import { useState, useRef} from 'react'
+import TimeEntry from '../components/TimeEntry';
+import Calendar from '../components/Calendar';
 
-function TimeBank(){
+function TimeBank() {
 
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [inputValue, setInputValue] = useState('');
 
-  const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
-  const firstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
+  const textareaRef = useRef(null);
 
-  const handlePrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
-  };
+  const [timeEntries, setTimeEntries] = useState({
+    start: '',
+    break: '',
+    clockIn: '',
+    clockOut: '',
+  });
+  const [activeOption, setActiveOption] = useState('start');
 
-  const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-    );
-  };
+  const handleOkClick = () => {
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  const renderDaysOfWeek = () => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    return days.map((day) => (
-      <th key={day} className="px-2 text-center text-[#C9C9CB] text-xl">
-        {day}
-      </th>
-    ));
-  };
-
-  const renderDaysInMonth = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const days = daysInMonth(month, year);
-    const firstDay = firstDayOfMonth(month, year);
-
-    const calendarDays = [];
-    for (let i = 0; i < firstDay; i++) {
-      calendarDays.push(
-        <td key={`empty-${i}`} className="bg-white"></td>
-      );
-    }
-
-    for (let day = 1; day <= days; day++) {
-      calendarDays.push(
-        <td key={day} className="py-2 text-center">
-          {day}
-        </td>
-      );
-    }
-
-    const rows = [];
-    let cells = [];
-
-    calendarDays.forEach((day, i) => {
-      if (i % 7 !== 0) {
-        cells.push(day);
-      } else {
-        rows.push(cells);
-        cells = [day];
-      }
-    });
-
-    if (cells.length) {
-      rows.push(cells);
-    }
-
-    return rows.map((row, i) => <tr key={i}>{row}</tr>);
+    switch (activeOption) {
+      case 'start':
+        setTimeEntries((prev) => ({ ...prev, start: currentTime }));
+        setActiveOption('break');
+        break;
+      case 'break':
+        setTimeEntries((prev) => ({ ...prev, break: currentTime }));
+        setActiveOption('clockIn'); 
+        break;
+      case 'clockIn':
+        setTimeEntries((prev) => ({ ...prev, clockIn: currentTime }));
+        setActiveOption('clockOut');
+        break;
+      case 'clockOut':
+        setTimeEntries((prev) => ({ ...prev, clockOut: currentTime }));
+        setActiveOption('register'); 
+        textareaRef.current.focus();
+        break;
+      default:
+        break;
+    } 
   };
 
   return (
-    <div className="flex flex-col items-center mt-10">
-      <header className="flex justify-between items-center w-96">
-        <button
-          onClick={handlePrevMonth}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-        >
-          left
-        </button>
-        <h2 className="text-3xl">
-          {currentDate.toLocaleString("en-US", { month: "long" })}{" "}
-          {currentDate.getFullYear()}
-        </h2>
-        <button
-          onClick={handleNextMonth}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-        >
-          right
-        </button>
-      </header>
-      <table className="mt-8 border-0" cellPadding={0} cellSpacing={0}>
-        <thead>
-          <tr>{renderDaysOfWeek()}</tr>
-        </thead>
-        <tbody>{renderDaysInMonth()}</tbody>
-      </table>
-    </div>
+    <>
+      <div className="flex flex-col items-center mt-10">
+
+        <Calendar />
+
+
+        <TimeEntry timeEntries={timeEntries} activeOption={activeOption} />
+
+        <div className="mt-5 w-full px-4">
+          <textarea
+            ref={textareaRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            className="border rounded-2xl w-full h-[150px] bg-[#F3F0F0] placeholder:text-left border-gray-500 pl-3 mt-0 text-left p-2"
+            placeholder="Description..."
+          />
+          <div className='w-full items-end justify-end flex px-9 pb-3'>
+            <button
+              onClick={handleOkClick}
+              className={`${activeOption === 'register'
+                ? 'bg-blue-500 text-white rounded-xl p-2'
+                : 'mt-2 w-12 h-12 bg-blue-500 text-white rounded-full flex justify-center items-center'
+                }`}
+            >
+              {activeOption === 'register' ? 'Register' : 'OK'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
