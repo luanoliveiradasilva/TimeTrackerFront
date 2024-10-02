@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-function Calendar(){
+function Calendar(dateItem) {
+
+  let isDateToday;
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
@@ -41,7 +43,11 @@ function Calendar(){
     }
 
     for (let day = 1; day <= days; day++) {
-      const isToday = day === currentDate.getDate(); // Verifica se é o dia atual
+      const isToday = day === currentDate.getDate();
+
+      if (isToday)
+        isDateToday = isToday;
+
       calendarDays.push(
         <td key={day} className="py-2 text-center">
           {isToday ? (
@@ -53,6 +59,7 @@ function Calendar(){
           ) : (
             <span>{day}</span>
           )}
+
         </td>
       );
     }
@@ -76,26 +83,31 @@ function Calendar(){
     return rows.map((row, i) => <tr key={i}>{row}</tr>);
   };
 
-   return(
+  useEffect(() => {
+    if (isDateToday)
+      dateItem.onDateSelect(currentDate.toISOString().split('T')[0]);
+  }, [currentDate, dateItem, isDateToday]);
+
+  return (
     <>
       <header className="flex justify-between items-center w-72">
-          <button onClick={handlePrevMonth} className="fas fa-heart">
-            <img src="/assets/icons/left.svg" alt="Left Arrow" className="w-8 h-8" />
-          </button>
-          <h2 className="text-3xl">
-            {currentDate.toLocaleString("en-US", { month: "long" })}{" "}
-            {currentDate.getFullYear()}
-          </h2>
-          <button onClick={handleNextMonth} className="focus:outline-none">
-            <img src="/assets/icons/right.svg" alt="Right Arrow" className="w-8 h-8" />
-          </button>
-        </header>
-        <table className="mt-8 border-0" cellPadding={0} cellSpacing={0}>
-          <thead>
-            <tr>{renderDaysOfWeek()}</tr>
-          </thead>
-          <tbody>{renderDaysInMonth()}</tbody>
-        </table>
+        <button onClick={handlePrevMonth} className="fas fa-heart">
+          <img src="/assets/icons/left.svg" alt="Left Arrow" className="w-8 h-8" />
+        </button>
+        <h2 className="text-3xl">
+          {currentDate.toLocaleString("en-US", { month: "long" })}{" "}
+          {currentDate.getFullYear()}
+        </h2>
+        <button onClick={handleNextMonth} className="focus:outline-none">
+          <img src="/assets/icons/right.svg" alt="Right Arrow" className="w-8 h-8" />
+        </button>
+      </header>
+      <table className="mt-8 border-0" cellPadding={0} cellSpacing={0}>
+        <thead>
+          <tr>{renderDaysOfWeek()}</tr>
+        </thead>
+        <tbody>{renderDaysInMonth()}</tbody>
+      </table>
     </>
   );
 };

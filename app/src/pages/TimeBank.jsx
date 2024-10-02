@@ -1,13 +1,13 @@
-import { useState, useRef} from 'react'
+import { useState, useRef } from 'react'
 import TimeEntry from '../components/TimeEntry';
 import Calendar from '../components/Calendar';
+import TimeTrackerController from '../Controllers/TimeTrackerController';
+
 
 function TimeBank() {
 
   const [inputValue, setInputValue] = useState('');
-
   const textareaRef = useRef(null);
-
   const [timeEntries, setTimeEntries] = useState({
     start: '',
     break: '',
@@ -15,8 +15,11 @@ function TimeBank() {
     clockOut: '',
   });
   const [activeOption, setActiveOption] = useState('start');
+  const [selectedDate, setSelectedDate] = useState('');
 
-  const handleOkClick = () => {
+  const controller = new TimeTrackerController();
+
+  const handleOkClick = async () => {
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     switch (activeOption) {
@@ -26,7 +29,7 @@ function TimeBank() {
         break;
       case 'break':
         setTimeEntries((prev) => ({ ...prev, break: currentTime }));
-        setActiveOption('clockIn'); 
+        setActiveOption('clockIn');
         break;
       case 'clockIn':
         setTimeEntries((prev) => ({ ...prev, clockIn: currentTime }));
@@ -34,20 +37,30 @@ function TimeBank() {
         break;
       case 'clockOut':
         setTimeEntries((prev) => ({ ...prev, clockOut: currentTime }));
-        setActiveOption('register'); 
+        setTimeEntries((prev) => ({ ...prev, dateTraker: selectedDate, }));
+        setActiveOption('register');
         textareaRef.current.focus();
         break;
+      case 'register': {
+        try {
+          await controller.registerTimeEntry(timeEntries);
+
+        } catch (error) {
+          console.error('Error registering time entry:', error);
+        }
+        break;
+      }
+
       default:
         break;
-    } 
+    }
   };
 
   return (
     <>
       <div className="flex flex-col items-center mt-10">
 
-        <Calendar />
-
+        <Calendar onDateSelect={setSelectedDate} />
 
         <TimeEntry timeEntries={timeEntries} activeOption={activeOption} />
 
