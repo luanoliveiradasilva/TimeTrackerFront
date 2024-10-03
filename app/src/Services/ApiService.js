@@ -12,11 +12,12 @@ const ApiService = {
             body: JSON.stringify(timeEntry),
         });
 
+
         if (!response.ok) {
             throw new Error('Failed to register time entry');
         }
 
-        return await response.json();
+        return response.ok;
     },
 };
 

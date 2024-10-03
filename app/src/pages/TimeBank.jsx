@@ -1,12 +1,13 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import TimeEntry from '../components/TimeEntry';
 import Calendar from '../components/Calendar';
 import TimeTrackerController from '../Controllers/TimeTrackerController';
-
+import PopUp from '../components/PopUp';
 
 function TimeBank() {
 
   const [inputValue, setInputValue] = useState('');
+  const [isActivePopup, setIsActivePopup] = useState(false);
   const textareaRef = useRef(null);
   const [timeEntries, setTimeEntries] = useState({
     start: '',
@@ -43,7 +44,9 @@ function TimeBank() {
         break;
       case 'register': {
         try {
-          await controller.registerTimeEntry(timeEntries);
+          const value = await controller.registerTimeEntry(timeEntries);
+
+          setIsActivePopup(value);
 
         } catch (error) {
           console.error('Error registering time entry:', error);
@@ -55,6 +58,12 @@ function TimeBank() {
         break;
     }
   };
+
+  setTimeout(() => {
+    if (isActivePopup)
+      setIsActivePopup(false);
+  }, 5000);
+
 
   return (
     <>
@@ -84,6 +93,8 @@ function TimeBank() {
             </button>
           </div>
         </div>
+
+        {isActivePopup && <PopUp isActive={isActivePopup} />}
       </div>
     </>
   );

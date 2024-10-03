@@ -5,7 +5,6 @@ import TimeTracker from '../Models/TimeTracker';
 class TimeTrackerController {
   async registerTimeEntry(timeEntries) {
 
-    console.log(timeEntries)
     const timeEntryModel = new TimeTracker(
       timeEntries.dateTraker,
       timeEntries.start,
@@ -16,7 +15,9 @@ class TimeTrackerController {
 
     try {
       const result = await ApiService.registerTimeEntryService(timeEntryModel);
+      
       return result;
+
     } catch (error) {
       console.error(error);
       throw error;
