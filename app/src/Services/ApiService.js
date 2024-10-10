@@ -1,24 +1,18 @@
+import axios from 'axios';
 
-const API_URL = 'https://localhost:44370/TimeTracker/v1/timerbanks'; // Substitua pela URL da sua API
+const API_URL = import.meta.env.VITE_API_URL
 
-const ApiService = {
-    async registerTimeEntryService(timeEntry) {
+const ApiService = async (timeEntry) => {
+    try {
 
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(timeEntry),
-        });
+        const response = await axios.post(`${API_URL}`, timeEntry);
 
+        return response.status;
 
-        if (!response.ok) {
-            throw new Error('Failed to register time entry');
-        }
+    } catch (error) {
 
-        return response.ok;
-    },
-};
+        return error.status;
+    }
+}
 
 export default ApiService;

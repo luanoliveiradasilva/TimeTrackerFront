@@ -52,7 +52,7 @@ function TimeBank() {
           setIsActivePopup(value);
 
         } catch (error) {
-          console.error('Error registering time entry:', error);
+          setIsActivePopup(error);
         }
         break;
       }
