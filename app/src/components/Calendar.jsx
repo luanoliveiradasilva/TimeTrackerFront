@@ -35,6 +35,8 @@ function Calendar(dateItem) {
     const days = daysInMonth(month, year);
     const firstDay = firstDayOfMonth(month, year);
 
+  
+
     const calendarDays = [];
     for (let i = 0; i < firstDay; i++) {
       calendarDays.push(
@@ -63,7 +65,7 @@ function Calendar(dateItem) {
         </td>
       );
     }
-
+    
     const rows = [];
     let cells = [];
 

@@ -5,12 +5,15 @@ import TimeTracker from '../Models/TimeTracker';
 class TimeTrackerController {
   async registerTimeEntry(timeEntries) {
 
+    console.log(timeEntries)
+
     const timeEntryModel = new TimeTracker(
       timeEntries.dateTraker,
       timeEntries.start,
       timeEntries.break,
       timeEntries.clockIn,
-      timeEntries.clockOut
+      timeEntries.clockOut,
+      timeEntries.description
     );
 
     try {

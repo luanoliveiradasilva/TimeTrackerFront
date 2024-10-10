@@ -14,7 +14,10 @@ function TimeBank() {
     break: '',
     clockIn: '',
     clockOut: '',
+    description: '',
   });
+
+
   const [activeOption, setActiveOption] = useState('start');
   const [selectedDate, setSelectedDate] = useState('');
 
@@ -58,6 +61,12 @@ function TimeBank() {
         break;
     }
   };
+
+  useEffect(() => {
+
+    setTimeEntries((prev) => ({ ...prev, description: inputValue, }));
+
+  }, [inputValue])
 
   setTimeout(() => {
     if (isActivePopup)
